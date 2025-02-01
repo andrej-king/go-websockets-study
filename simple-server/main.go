@@ -3,20 +3,20 @@ package main
 // https://dev.to/davidnadejdin/simple-server-on-gorilla-websocket-52h7
 // https://dev.to/neelp03/using-websockets-in-go-for-real-time-communication-4b3l
 // https://github.com/gorilla/websocket/blob/main/examples/echo/
+// https://eli.thegreenplace.net/2019/on-concurrency-in-go-http-servers/
 
 import (
-	"fmt"
 	"go_websocket/simple-server/ws"
+	"log"
+	"net/http"
+	"strconv"
 )
 
-var port uint16 = 8080
-var route string = "/ws"
+var port = 8080
 
 func main() {
-	fmt.Println(fmt.Sprintf("WebSocket server started on :%d%s", port, route))
-	ws.StartServer(port, route)
+	ws.Start()
 
-	// wait input for continue work server
-	var input string
-	fmt.Scanln(&input)
+	log.Printf("Going to listen on port %d\n", port)
+	log.Fatal(http.ListenAndServe("localhost:"+strconv.Itoa(port), nil))
 }
