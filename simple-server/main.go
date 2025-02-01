@@ -4,6 +4,7 @@ package main
 // https://dev.to/neelp03/using-websockets-in-go-for-real-time-communication-4b3l
 // https://github.com/gorilla/websocket/blob/main/examples/echo/
 // https://eli.thegreenplace.net/2019/on-concurrency-in-go-http-servers/
+// https://gobyexample.com
 
 import (
 	"go_websocket/simple-server/ws"
