@@ -1,2 +1,2 @@
-run-api:
-	go run ./api
+run:
+	go run main.go
