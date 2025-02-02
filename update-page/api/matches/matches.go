@@ -26,8 +26,10 @@ var teams = []string{
 var MatchList = map[int]Match{}
 
 type Match struct {
-	Name string  `json:"name"`
-	Odd  float64 `json:"odd"`
+	Name         string  `json:"name"`
+	FirstWinOdd  float64 `json:"firstWinOdd"`
+	SecondWinOdd float64 `json:"secondWinOdd"`
+	DrawOdd      float64 `json:"drawOdd"`
 }
 
 type IntRange struct {
@@ -59,10 +61,16 @@ func (fr *FloatRange) NextRandomWith2Decimal(r *rand.Rand) float64 {
 func initMatchesData() {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	ir := IntRange{10000, 100000}
+	fr := FloatRange{1, 50}
 
 	// set init match values
 	for _, v := range teams {
-		MatchList[ir.NextRandom(r)] = Match{Odd: 0, Name: v}
+		MatchList[ir.NextRandom(r)] = Match{
+			FirstWinOdd:  fr.NextRandomWith2Decimal(r),
+			SecondWinOdd: fr.NextRandomWith2Decimal(r),
+			DrawOdd:      fr.NextRandomWith2Decimal(r),
+			Name:         v,
+		}
 	}
 }
 
@@ -71,26 +79,48 @@ func updateMatches(updateInterval time.Duration) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	ir := IntRange{-10, 10} // for partial update random odds (no all)
 	fr := FloatRange{1, 50} // for update new odd values
-	var oldOdd float64
+	var oldMatchData Match
+	var isMatchUpdated bool
 
 	for {
+		time.Sleep(updateInterval)
+
 		// update random odds in matches
 		for k, v := range MatchList {
-			// update all odds for first start
-			if v.Odd <= 1 || ir.NextRandom(r) > 0 {
-				oldOdd = v.Odd
 
-				// generate a new random odd value and set as new map value
-				v.Odd = fr.NextRandomWith2Decimal(r)
+			// set default values
+			oldMatchData = v
+			isMatchUpdated = false
+
+			// update first win odd
+			if ir.NextRandom(r) > 0 {
+				isMatchUpdated = true
+				v.FirstWinOdd = fr.NextRandomWith2Decimal(r)
 				MatchList[k] = v
+			}
 
-				fmt.Printf("[%d] match with updated odds: [%.2f] old, [%.2f] new\n", k, oldOdd, v.Odd)
+			// update second win odd
+			if ir.NextRandom(r) > 0 {
+				isMatchUpdated = true
+				v.SecondWinOdd = fr.NextRandomWith2Decimal(r)
+				MatchList[k] = v
+			}
+
+			// update draw odd
+			if ir.NextRandom(r) > 0 {
+				isMatchUpdated = true
+				v.DrawOdd = fr.NextRandomWith2Decimal(r)
+				MatchList[k] = v
+			}
+
+			// show changes in console
+			if isMatchUpdated {
+				fmt.Printf("[%d] match updated\n", k)
+				fmt.Println("Old:", oldMatchData)
+				fmt.Println("New:", v)
+				fmt.Println()
 			}
 		}
-
-		fmt.Println()
-
-		time.Sleep(updateInterval)
 	}
 }
 
