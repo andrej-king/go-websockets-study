@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-func main() {
-	port := 8000
-	updateMatchesInterval := 7 * time.Second
+var port = 8000
+var updateMatchesInterval = 7 * time.Second
 
+func main() {
 	go matches.Init(updateMatchesInterval)
 
 	http.HandleFunc("/api/matches", func(w http.ResponseWriter, r *http.Request) {
