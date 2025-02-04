@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"go_websocket/update-page/api"
+	"go_websocket/update-page/ws"
 	"log"
 	"net/http"
 	"strconv"
@@ -38,4 +39,9 @@ func handleRoutes() {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(api.MatchList) // or use json.Marshal
 	})
+
+	manager := ws.NewManager()
+	http.HandleFunc("/ws", manager.ServeWS)
+
+	http.HandleFunc("/debug", manager.DebugClients)
 }
