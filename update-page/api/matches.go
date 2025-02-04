@@ -75,7 +75,7 @@ func initMatchesData() {
 }
 
 // updateOdds partial update odds by interval
-func updateMatches(updateInterval time.Duration) {
+func updateMatches(updateInterval time.Duration, isDebugMatches bool) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	ir := IntRange{-10, 10} // for partial update random odds (no all)
 	fr := FloatRange{1, 50} // for update new odd values
@@ -114,7 +114,7 @@ func updateMatches(updateInterval time.Duration) {
 			}
 
 			// show changes in console
-			if isMatchUpdated {
+			if isMatchUpdated && isDebugMatches {
 				fmt.Printf("[%d] match updated\n", k)
 				fmt.Println("Old:", oldMatchData)
 				fmt.Println("New:", v)
@@ -124,7 +124,7 @@ func updateMatches(updateInterval time.Duration) {
 	}
 }
 
-func Init(updateInterval time.Duration) {
+func Init(updateInterval time.Duration, isDebugMatches bool) {
 	initMatchesData()
-	updateMatches(updateInterval)
+	updateMatches(updateInterval, isDebugMatches)
 }

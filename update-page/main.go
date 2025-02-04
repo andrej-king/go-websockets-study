@@ -10,19 +10,22 @@ import (
 	"time"
 )
 
-var port = 8000
-var updateMatchesInterval = 3 * time.Second
+var (
+	port                  = 8000
+	updateMatchesInterval = 3 * time.Second
+	isDebugMatches        = false
+)
 
 func main() {
-	handleRoutes()
+	setupRoutes()
 
 	log.Printf("Going to listen on port %d\n", port)
 	log.Fatal(http.ListenAndServe("localhost:"+strconv.Itoa(port), nil))
 }
 
-func handleRoutes() {
+func setupRoutes() {
 	// init match updates
-	go api.Init(updateMatchesInterval)
+	go api.Init(updateMatchesInterval, isDebugMatches)
 
 	http.Handle("/", http.FileServer(http.Dir("./public")))
 
