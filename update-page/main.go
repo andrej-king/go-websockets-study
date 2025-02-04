@@ -23,7 +23,7 @@ func handleRoutes() {
 	// init match updates
 	go api.Init(updateMatchesInterval)
 
-	http.Handle("/", http.FileServer(http.Dir("./frontend")))
+	http.Handle("/", http.FileServer(http.Dir("./public")))
 
 	http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
 		//w.Header().Set("Access-Control-Allow-Origin", "*")
