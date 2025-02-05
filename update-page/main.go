@@ -36,7 +36,7 @@ func setupRoutes() {
 		json.NewEncoder(w).Encode("{}")
 	})
 
-	http.HandleFunc("/api/matches", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/api/matches/live", func(w http.ResponseWriter, r *http.Request) {
 		//w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

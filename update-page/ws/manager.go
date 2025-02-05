@@ -81,6 +81,7 @@ func (m *Manager) ServeWS(w http.ResponseWriter, r *http.Request) {
 // setupEventHandlers configures and adds all handlers
 func (m *Manager) setupEventHandlers() {
 	m.handlers[EventSendOdds] = SendOddsHandler
+	m.handlers[EventReadyToReceiveOdds] = ReadyToReceiveOddsHandler
 }
 
 // routeEvent is used to make sure the correct event goes into the correct handler

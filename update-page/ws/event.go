@@ -3,6 +3,7 @@ package ws
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -22,11 +23,31 @@ type EventHandler func(event Event, client *Client) error
 const (
 	// EventSendOdds is event when send odds
 	EventSendOdds = "send_odds"
+
+	// EventReadyToReceiveOdds is client event ready to receive odds
+	EventReadyToReceiveOdds = "ready_to_receive_odds"
 )
+
+type ReadyToReceiveOddsEvent struct {
+	Type string `json:"type"`
+}
 
 type NewMessageEvent struct {
 	Message string    `json:"message"`
 	Sent    time.Time `json:"sent"`
+}
+
+func ReadyToReceiveOddsHandler(event Event, c *Client) error {
+	var payload ReadyToReceiveOddsEvent
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		log.Printf("error marshalling odd handler payload: %v", err)
+	}
+
+	fmt.Println(string(event.Payload))
+	fmt.Println(payload.Type)
+	//fmt.Println(string(event.Payload))
+
+	return nil
 }
 
 func SendOddsHandler(event Event, c *Client) error {
