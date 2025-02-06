@@ -8,7 +8,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet">
 
     <style>
         body {
@@ -30,6 +31,8 @@
 <div id="buttons">
     <button onclick="connect()">Start</button>
     <button onclick="disconnect()">Stop</button>
+    <button onclick="sendRequest()">Request event</button>
+    <button onclick="toggleSubscribeToExtraUpdates()">Subscribe to extra updates</button>
 </div>
 
 <p id="status-container">Status: <span id="status"></span></p>
@@ -37,7 +40,8 @@
 <div id="data">Waiting for data...</div>
 
 <script>
-    let socket, div = null;
+    let socket, div, receivedMsg = null;
+    let isSubscribedToExtraUpdates = false;
     const dataContainer = document.getElementById("data");
     const status = document.getElementById("status");
 
@@ -77,13 +81,27 @@
             status.textContent = statusMessage
 
             // Send an optional message to the server
-            socket.send('Hello, server!');
+            // socket.send('Hello, server!');
         };
 
         // Handle incoming messages from the server
         socket.onmessage = function (event) {
+            const message = JSON.parse(event.data);
+
+            // Handle different types of events
+            if (message.type === "regular_update") {
+                receivedMsg = `Regular Update: "${message.data}"`;
+            } else if (message.type === "response") {
+                receivedMsg = `Response: "${message.data}"`;
+            } else if (message.type === "extra_update") {
+                receivedMsg = `Extra Update: "${message.data}"`;
+            } else {
+                alert(`Unexpected type: ${message.type}`)
+                throw new Error(`Unexpected type: ${message.type}`);
+            }
+
             div = document.createElement('div');
-            div.appendChild(document.createTextNode(event.data));
+            div.appendChild(document.createTextNode(receivedMsg));
 
             dataContainer.appendChild(div);
         };
@@ -104,6 +122,7 @@
             status.textContent = statusMessage
 
             socket = null;
+            isSubscribedToExtraUpdates = false;
         };
     }
 
@@ -114,6 +133,59 @@
         }
 
         socket.close();
+    }
+
+    function sendRequest() {
+        // Do nothing if not connected
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            console.log({socket, readyState: socket.readyState});
+
+            return;
+        }
+
+        const request = {
+            type: "request_response",
+            data: 'Hello, server! Please respond.',
+        }
+
+        socket.send(JSON.stringify(request));
+
+        const textStyleColor = 'blue';
+
+        div = document.createElement('div');
+        div.style.color = textStyleColor;
+        div.appendChild(document.createTextNode("Sent request manually"));
+
+        dataContainer.appendChild(div);
+    }
+
+    function toggleSubscribeToExtraUpdates() {
+        // Do nothing if not connected
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            console.log({socket, readyState: socket.readyState});
+
+            return;
+        }
+
+        const request = isSubscribedToExtraUpdates
+            ? {type: "stop_extra_updates", data: ''}
+            : {type: "start_extra_updates", data: ''};
+
+        socket.send(JSON.stringify(request));
+
+        const textStyleColor = isSubscribedToExtraUpdates ? 'red' : 'orange';
+
+        div = document.createElement('div');
+        div.style.color = textStyleColor;
+
+        const msg = isSubscribedToExtraUpdates
+            ? "Stop subscribe to extra updates"
+            : "Subscribed to extra updates";
+
+        div.appendChild(document.createTextNode(msg));
+        dataContainer.appendChild(div);
+
+        isSubscribedToExtraUpdates = !isSubscribedToExtraUpdates;
     }
 </script>
 </body>
