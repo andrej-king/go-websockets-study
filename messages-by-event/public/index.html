@@ -29,10 +29,10 @@
 <h1>WebSocket Messages By Event Example</h1>
 
 <div id="buttons">
-    <button onclick="connect()">Start</button>
-    <button onclick="disconnect()">Stop</button>
-    <button onclick="sendRequest()">Request event</button>
-    <button onclick="toggleSubscribeToExtraUpdates()">Subscribe to extra updates</button>
+    <button id="connect-btn">Start</button>
+    <button id="disconnect-btn">Stop</button>
+    <button id="send-request-btn">Request event</button>
+    <button id="toggle-subscribe-to-extra-updates-btn">Subscribe to extra updates</button>
 </div>
 
 <p id="status-container">Status: <span id="status"></span></p>
@@ -48,6 +48,12 @@
     window.addEventListener('load', function () {
         // Establish the initial connection
         connect();
+
+        // btn listeners
+        document.getElementById('connect-btn').addEventListener('click', connect);
+        document.getElementById('disconnect-btn').addEventListener('click', disconnect);
+        document.getElementById('send-request-btn').addEventListener('click', sendRequest);
+        document.getElementById('toggle-subscribe-to-extra-updates-btn').addEventListener('click', toggleSubscribeToExtraUpdates);
     });
 
     function connect() {
