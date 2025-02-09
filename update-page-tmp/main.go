@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"go_websocket/update-page/api"
-	"go_websocket/update-page/ws"
+	"go_websocket/update-page-tmp/api"
+	"go_websocket/update-page-tmp/ws"
 	"log"
 	"net/http"
 	"strconv"
