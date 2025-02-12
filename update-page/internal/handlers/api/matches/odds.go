@@ -2,12 +2,11 @@ package matches
 
 import (
 	"log"
-	"math/rand"
 	"time"
 )
 
 func (list *List) init(teams []string) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := list.Rand
 	ir := intRange{10000, 100000}
 	fr := floatRange{1, list.App.MaxOddValue}
 
@@ -26,7 +25,7 @@ func (list *List) init(teams []string) {
 
 // updateByInterval partial update odds by interval
 func (list *List) updateLiveByInterval() {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := list.Rand
 	ir := intRange{-10, 10}                   // for partial update random odds (no all)
 	fr := floatRange{1, list.App.MaxOddValue} // for update new odd values
 	var oldMatchData Match
