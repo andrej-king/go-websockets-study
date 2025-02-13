@@ -28,15 +28,13 @@ func (list *List) upsertLiveMatch(id int, match Match) {
 
 // New initialize matches List with default values
 func New(app *config.App) *List {
-	list := List{
+	return &List{
 		App:  app,
 		Rand: rand.New(rand.NewSource(time.Now().UnixNano())),
 
 		Live:  make(map[int]Match),
 		Teams: teams,
 	}
-
-	return &list
 }
 
 // Run update matches odds by interval

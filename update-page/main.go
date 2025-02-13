@@ -33,7 +33,7 @@ func main() {
 
 func handleConnections(app *config.App, matchesList *matches.List) {
 	// Serve static files from the "static" directory
-	http.Handle("/", http.FileServer(http.Dir("./public")))
+	http.Handle("/", http.FileServer(http.Dir("./ui")))
 
 	// TODO  WebSocket endpoint
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
