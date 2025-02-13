@@ -5,3 +5,25 @@ html, body {
 main {
     flex: auto;
 }
+
+td {
+    position: relative;
+}
+
+td.odd-down::after {
+    content: "\F229";
+    font-family: "bootstrap-icons";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    color: red;
+}
+
+td.odd-up::after {
+    content: "\F235";
+    font-family: "bootstrap-icons";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    color: green;
+}

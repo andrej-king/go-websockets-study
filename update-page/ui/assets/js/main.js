@@ -1,7 +1,9 @@
+const LIVE_MATCHES_URL = '/api/matches/live';
+
 window.addEventListener('load', function () {
     console.log("Page is fully loaded.");
 
-    loadMatches(`/api/matches/live`);
+    startMatchFetching(LIVE_MATCHES_URL);
 
     // set footer text
     const dateFooter = document.querySelector('footer .js-date-container');
