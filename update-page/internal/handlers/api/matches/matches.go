@@ -81,7 +81,7 @@ func (ir *intRange) NextRandom(r *rand.Rand) int {
 
 // IsOddUpdateNeeded helper func for random update match odd (regenerate status every call)
 func (ir *intRange) IsOddUpdateNeeded(r *rand.Rand) bool {
-	return ir.NextRandom(r) > 0
+	return ir.NextRandom(r) > 5
 }
 
 // NextRandom random float64 value in range

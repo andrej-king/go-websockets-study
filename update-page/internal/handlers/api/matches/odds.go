@@ -78,7 +78,7 @@ func (list *List) updateLiveByInterval() {
 				log.Printf("[%d] match updated\n", k)
 				log.Println("Old:", oldMatchData)
 				log.Println("New:", v)
-				log.Println()
+				log.Println("-------------------------------------")
 			}
 		}
 	}
