@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"go_websocket/update-page/config"
 	"go_websocket/update-page/internal/handlers/api/matches"
+	"go_websocket/update-page/internal/handlers/ws"
 	"log"
 	"net/http"
 	"strconv"
@@ -13,7 +14,7 @@ import (
 func main() {
 	app := config.App{
 		Port:               8080,
-		IsDebug:            true,
+		IsDebug:            false,
 		UpdateLiveInterval: 3 * time.Second,
 		MaxOddValue:        50,
 	}
@@ -23,6 +24,7 @@ func main() {
 
 	// run auto update matches odds
 	go matchesApi.Run()
+	go ws.New()
 
 	// handle routes
 	handleConnections(&app, matchesApi)
@@ -36,12 +38,7 @@ func handleConnections(app *config.App, matchesList *matches.List) {
 	http.Handle("/", http.FileServer(http.Dir("./ui")))
 
 	// TODO  WebSocket endpoint
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		//w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(app)
-	})
+	http.HandleFunc("/ws", ws.HandleConnections)
 
 	// live matches endpoint (listen only get method)
 	http.HandleFunc("GET /api/matches/live", func(w http.ResponseWriter, r *http.Request) {
