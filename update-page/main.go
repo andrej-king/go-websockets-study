@@ -19,26 +19,28 @@ func main() {
 		MaxOddValue:        50,
 	}
 
-	// init api matches List
+	// init
 	matchesApi := matches.New(&app)
+	wsManager := ws.NewManager(&app)
 
 	// run auto update matches odds
 	go matchesApi.Run()
-	go ws.New()
+	//go ws.New()
 
 	// handle routes
-	handleConnections(&app, matchesApi)
+	handleConnections(&app, matchesApi, wsManager)
 
 	log.Println("Server is started at port", app.Port)
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(app.Port), nil))
 }
 
-func handleConnections(app *config.App, matchesList *matches.List) {
+func handleConnections(app *config.App, matchesList *matches.List, wsManager *ws.Manager) {
 	// Serve static files from the "static" directory
 	http.Handle("/", http.FileServer(http.Dir("./ui")))
 
 	// TODO  WebSocket endpoint
-	http.HandleFunc("/ws", ws.HandleConnections)
+	http.HandleFunc("/ws", wsManager.ServeWS)
+	http.HandleFunc("/ws-debug", wsManager.DebugClients)
 
 	// live matches endpoint (listen only get method)
 	http.HandleFunc("GET /api/matches/live", func(w http.ResponseWriter, r *http.Request) {
