@@ -37,6 +37,8 @@ func (list *List) updateLiveByInterval() {
 	var oldMatchData Match
 	var isMatchUpdated bool
 
+	var tempLiveOddsPayload map[int]Match
+
 	for {
 		time.Sleep(list.App.UpdateLiveInterval)
 
@@ -81,7 +83,10 @@ func (list *List) updateLiveByInterval() {
 
 			// send updated odds as json
 			if isMatchUpdated {
-				jsonString, _ := json.Marshal(v)
+				tempLiveOddsPayload = make(map[int]Match, 1)
+				tempLiveOddsPayload[k] = v
+				jsonString, _ := json.Marshal(tempLiveOddsPayload)
+
 				list.WebsocketManager.SubscribersDataHandler(ws.Event{Type: ws.EventLiveOdds, Payload: jsonString})
 			}
 

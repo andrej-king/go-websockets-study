@@ -16,26 +16,31 @@ async function loadMatches(url) {
 
         await response.json()
             .then(data => {
-                tableBody.getAttribute('data') === TABLE_RENDERED_ID
-                    ? refreshTableOdd(data, tableBody)
-                    : buildTableOdd(data, tableBody);
-            })
+                buildTableOdd(data, tableBody);
+
+                // used for fetch by ajax with interval
+                // tableBody.getAttribute('data') === TABLE_RENDERED_ID
+                //     ? refreshTableOdd(data)
+                //     : buildTableOdd(data, tableBody);
+            });
     } catch (error) {
         console.error(error.message)
     }
 }
 
-function startMatchFetching(url, interval = 5000) {
-    async function loop() {
-        await loadMatches(url);
-        setTimeout(loop, interval);
-    }
+/**
+ * Load matches by interval requests (replaced by websockets)
+ */
+// function startMatchFetching(url, interval = 5000) {
+//     async function loop() {
+//         await loadMatches(url);
+//         setTimeout(loop, interval);
+//     }
+//
+//     loop(url, interval);
+// }
 
-    loop(url, interval);
-}
-
-
-function refreshTableOdd(data, tableBody) {
+function refreshTableOdd(data) {
     let row, oddElement;
 
     Object.keys(data).forEach((key) => {
