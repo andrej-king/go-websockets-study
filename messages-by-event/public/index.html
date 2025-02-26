@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Messages By Event Example</title>
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet">
+
+    <style>
+        body {
+            font-family: "Roboto", serif;
+        }
+
+        #buttons {
+            margin-bottom: 10px;
+
+            button {
+                cursor: pointer;
+            }
+        }
+    </style>
+</head>
+<body>
+<h1>WebSocket Messages By Event Example</h1>
+
+<div id="buttons">
+    <button id="connect-btn">Start</button>
+    <button id="disconnect-btn">Stop</button>
+    <button id="send-request-btn">Request event</button>
+    <button id="toggle-subscribe-to-extra-updates-btn">Subscribe to extra updates</button>
+</div>
+
+<p id="status-container">Status: <span id="status"></span></p>
+
+<div id="data">Waiting for data...</div>
+
+<script>
+    let socket, div, receivedMsg = null;
+    let isSubscribedToExtraUpdates = false;
+    const dataContainer = document.getElementById("data");
+    const status = document.getElementById("status");
+
+    window.addEventListener('load', function () {
+        // Establish the initial connection
+        connect();
+
+        // btn listeners
+        document.getElementById('connect-btn').addEventListener('click', connect);
+        document.getElementById('disconnect-btn').addEventListener('click', disconnect);
+        document.getElementById('send-request-btn').addEventListener('click', sendRequest);
+        document.getElementById('toggle-subscribe-to-extra-updates-btn').addEventListener('click', toggleSubscribeToExtraUpdates);
+    });
+
+    function connect() {
+        // Do nothing if socket already connected
+        if (socket) {
+            return;
+        }
+
+        if (window['WebSocket']) {
+            // Create a WebSocket connection to the server
+            socket = new WebSocket('ws://localhost:8080/ws');
+        } else {
+            alert("Not supporting websockets");
+        }
+
+        // Handle connection open event
+        socket.onopen = function (event) {
+            const statusMessage = 'Connected';
+            const textStyleColor = 'green';
+
+            // Create response msg div container
+            div = document.createElement('div');
+            div.style.color = textStyleColor;
+            div.style.fontWeight = '500';
+            div.appendChild(document.createTextNode(statusMessage));
+
+            dataContainer.appendChild(div);
+
+            // Update status container
+            status.style.color = textStyleColor;
+            status.textContent = statusMessage
+
+            // Send an optional message to the server
+            // socket.send('Hello, server!');
+        };
+
+        // Handle incoming messages from the server
+        socket.onmessage = function (event) {
+            const message = JSON.parse(event.data);
+
+            // Handle different types of events
+            if (message.type === "regular_update") {
+                receivedMsg = `Regular Update: "${message.data}"`;
+            } else if (message.type === "response") {
+                receivedMsg = `Response: "${message.data}"`;
+            } else if (message.type === "extra_update") {
+                receivedMsg = `Extra Update: "${message.data}"`;
+            } else {
+                alert(`Unexpected type: ${message.type}`)
+                throw new Error(`Unexpected type: ${message.type}`);
+            }
+
+            div = document.createElement('div');
+            div.appendChild(document.createTextNode(receivedMsg));
+
+            dataContainer.appendChild(div);
+        };
+
+        // Handle connection close event
+        socket.onclose = function (event) {
+            const statusMessage = 'Disconnected';
+            const textStyleColor = 'red';
+
+            div = document.createElement('div');
+            div.style.color = textStyleColor;
+            div.style.fontWeight = '500';
+            div.appendChild(document.createTextNode(statusMessage));
+
+            dataContainer.appendChild(div);
+
+            status.style.color = textStyleColor;
+            status.textContent = statusMessage
+
+            socket = null;
+            isSubscribedToExtraUpdates = false;
+        };
+    }
+
+    function disconnect() {
+        // Do nothing if no have socket
+        if (!socket) {
+            return;
+        }
+
+        socket.close();
+    }
+
+    function sendRequest() {
+        // Do nothing if not connected
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            console.log({socket, readyState: socket.readyState});
+
+            return;
+        }
+
+        const request = {
+            type: "request_response",
+            data: 'Hello, server! Please respond.',
+        }
+
+        socket.send(JSON.stringify(request));
+
+        const textStyleColor = 'blue';
+
+        div = document.createElement('div');
+        div.style.color = textStyleColor;
+        div.appendChild(document.createTextNode("Sent request manually"));
+
+        dataContainer.appendChild(div);
+    }
+
+    function toggleSubscribeToExtraUpdates() {
+        // Do nothing if not connected
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            console.log({socket, readyState: socket.readyState});
+
+            return;
+        }
+
+        const request = isSubscribedToExtraUpdates
+            ? {type: "stop_extra_updates", data: ''}
+            : {type: "start_extra_updates", data: ''};
+
+        socket.send(JSON.stringify(request));
+
+        const textStyleColor = isSubscribedToExtraUpdates ? 'red' : 'orange';
+
+        div = document.createElement('div');
+        div.style.color = textStyleColor;
+
+        const msg = isSubscribedToExtraUpdates
+            ? "Stop subscribe to extra updates"
+            : "Subscribed to extra updates";
+
+        div.appendChild(document.createTextNode(msg));
+        dataContainer.appendChild(div);
+
+        isSubscribedToExtraUpdates = !isSubscribedToExtraUpdates;
+    }
+</script>
+</body>
+</html>
