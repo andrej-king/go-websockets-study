@@ -1,6 +1,8 @@
 package matches
 
 import (
+	"encoding/json"
+	"go_websocket/update-page/internal/handlers/ws"
 	"log"
 	"time"
 )
@@ -21,6 +23,10 @@ func (list *List) init(teams []string) {
 
 		list.upsertLiveMatch(ir.NextRandom(r), match)
 	}
+}
+
+type LiveOddsPayload struct {
+	Name string `json:"name"`
 }
 
 // updateByInterval partial update odds by interval
@@ -71,6 +77,12 @@ func (list *List) updateLiveByInterval() {
 
 				// override match in original map
 				list.Live[k] = v
+			}
+
+			// send updated odds as json
+			if isMatchUpdated {
+				jsonString, _ := json.Marshal(v)
+				list.WebsocketManager.SubscribersDataHandler(ws.Event{Type: ws.EventLiveOdds, Payload: jsonString})
 			}
 
 			// show changes in console

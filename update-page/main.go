@@ -20,8 +20,8 @@ func main() {
 	}
 
 	// init
-	matchesApi := matches.New(&app)
 	wsManager := ws.NewManager(&app)
+	matchesApi := matches.New(&app, wsManager)
 
 	// run auto update matches odds
 	go matchesApi.Run()

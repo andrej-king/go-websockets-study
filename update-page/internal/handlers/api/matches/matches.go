@@ -2,6 +2,7 @@ package matches
 
 import (
 	"go_websocket/update-page/config"
+	"go_websocket/update-page/internal/handlers/ws"
 	"math"
 	"math/rand"
 	"sync"
@@ -16,6 +17,8 @@ type List struct {
 
 	Live  map[int]Match
 	Teams []string
+
+	WebsocketManager *ws.Manager
 }
 
 // upsertLiveMatch update or add Match in Live List
@@ -27,13 +30,14 @@ func (list *List) upsertLiveMatch(id int, match Match) {
 }
 
 // New initialize matches List with default values
-func New(app *config.App) *List {
+func New(app *config.App, wsManager *ws.Manager) *List {
 	return &List{
 		App:  app,
 		Rand: rand.New(rand.NewSource(time.Now().UnixNano())),
 
-		Live:  make(map[int]Match),
-		Teams: teams,
+		Live:             make(map[int]Match),
+		Teams:            teams,
+		WebsocketManager: wsManager,
 	}
 }
 

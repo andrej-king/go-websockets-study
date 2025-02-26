@@ -42,6 +42,9 @@ type Manager struct {
 
 	// handlers are functions that are used to handle Events
 	handlers map[string]EventHandler
+
+	// LiveOddsChan channel keep messages for live odds subscribers
+	LiveOddsChan chan Event
 }
 
 func NewManager(app *config.App) *Manager {
@@ -50,7 +53,8 @@ func NewManager(app *config.App) *Manager {
 			all:      make(map[*Client]bool),
 			liveOdds: make(map[*Client]bool),
 		},
-		handlers: make(map[string]EventHandler),
+		handlers:     make(map[string]EventHandler),
+		LiveOddsChan: make(chan Event),
 	}
 
 	m.setupEventHandlers()
@@ -107,5 +111,15 @@ func (m *Manager) removeClient(client *Client) {
 	// remove client from live odd subscribers list
 	if _, ok := m.clients.liveOdds[client]; ok {
 		delete(m.clients.liveOdds, client)
+	}
+}
+
+// SubscribersDataHandler send message to each player in channel
+func (m *Manager) SubscribersDataHandler(event Event) {
+	switch event.Type {
+	case EventLiveOdds:
+		for client := range m.clients.liveOdds {
+			client.egress <- event
+		}
 	}
 }
