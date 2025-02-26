@@ -1,5 +1,8 @@
 ## Info pages
 - [Effective Go](https://go.dev/doc/effective_go)
+- [example echo source](https://github.com/gorilla/websocket/blob/main/examples/echo/server.go)
+- [websocketsgo youtube](https://www.youtube.com/watch?v=pKpKv9MKN-E)
+- [websocketsgo source](https://github.com/percybolmer/websocketsgo)
 
 ## App structure
 - [example 1](https://medium.com/insiderengineering/a-pragmatic-and-systematic-project-structure-in-go-4a47b4fbe929)
@@ -17,11 +20,6 @@ Websocket subscribe payload example
   "payload": {"name": "live_odds"}
 }
 ```
-
-## Info pages
-- [example echo source](https://github.com/gorilla/websocket/blob/main/examples/echo/server.go)
-- [websocketsgo youtube](https://www.youtube.com/watch?v=pKpKv9MKN-E)
-- [websocketsgo source](https://github.com/percybolmer/websocketsgo)
 
 ## Example auto update data via websocket (update-page dir)
 ![odds-updated-by-websocket.png](update-page/docs/odds-updated-by-websocket.png)
